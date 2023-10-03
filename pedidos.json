@@ -1,5 +1,5 @@
 {
-  "nextId": 3,
+  "nextId": 4,
   "pedidos": [
     {
       "id": 1,
@@ -7,15 +7,20 @@
       "produto": "Pizza",
       "valor": 50,
       "entregue": false,
-      "timestamp": "2023-10-03T14:45:23.326Z"
+      "timestamp": "2023-10-03T17:19:53.362Z"
     },
     {
       "id": 2,
-      "cliente": "Jao",
-      "produto": "Pizza",
-      "valor": 50,
-      "entregue": false,
-      "timestamp": "2023-10-03T14:46:51.707Z"
+      "cliente": "Jao da Silva",
+      "produto": "Pizza de Calabresa",
+      "valor": 45,
+      "entregue": true,
+      "timestamp": "2023-10-03T17:21:38.131Z"
+    },
+    {
+      "id": 3,
+      "cliente": false,
+      "timestamp": "2023-10-03T17:21:46.943Z"
     }
   ]
 }
