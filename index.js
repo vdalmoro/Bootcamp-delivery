@@ -43,8 +43,9 @@ app.post("/criarPedido", (req, res) => {
 });
 
 //Chamada atualizaPedido
-app.put("/atualizaPedido", (req, res) => {
-  const { id, cliente, produto, valor, entregue } = req.body;
+app.put("/atualizaPedido/:X", (req, res) => {
+  const id = parseInt(req.params.X);
+  const { cliente, produto, valor, entregue } = req.body;
 
   if (!id || !cliente || !produto || !valor || !entregue === undefined) {
     return res.json({
@@ -55,15 +56,26 @@ app.put("/atualizaPedido", (req, res) => {
 });
 
 //Chamada atualizaEntrega
-app.put("/atualizaEntrega", (req, res) => {
-  const { id, entregue } = req.body;
-
+app.put("/atualizaEntrega/:X", (req, res) => {
+  const id = parseInt(req.params.X);
+  const entregue = req.body.entregue;
   if (!id || !entregue === undefined) {
     return res.json({
       error: "Id e status são campos obrigatórios.",
     });
   }
-  return res.json(atualizaPedido(id, entregue));
+  return res.json(atualizaEntrega(id, entregue));
+});
+
+//Chamada deletarPedido
+app.delete("/deletarPedido/:X", (req, res) => {
+  const id = parseInt(req.params.X);
+  if (!id === undefined) {
+    return res.json({
+      error: "Id e status são campos obrigatórios.",
+    });
+  }
+  return res.json(deletarPedido(id));
 });
 
 //Função criarPedido
@@ -111,8 +123,21 @@ function atualizaEntrega(id, entregue) {
     const err = json({ error: "Pedido não encontrado" });
     return err;
   }
-
   pedidoAtual.entregue = entregue;
+  writeFileSync("./pedidos.json", JSON.stringify(pedidosData, null, 2));
+  return pedidoAtual;
+}
+
+//Função deletarPedido
+function deletarPedido(id) {
+  const pedidosData = JSON.parse(readFileSync("pedidos.json", "utf8"));
+  const pedidoAtual = pedidosData.pedidos.find((pedido) => pedido.id === id);
+
+  if (!pedidoAtual) {
+    const err = json({ error: "Pedido não encontrado" });
+    return err;
+  }
+  pedidosData.pedidos.splice(id, 1);
   writeFileSync("./pedidos.json", JSON.stringify(pedidosData, null, 2));
   return pedidoAtual;
 }
