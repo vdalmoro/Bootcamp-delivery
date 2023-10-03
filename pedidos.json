@@ -1,14 +1,6 @@
 {
-  "nextId": 4,
+  "nextId": 6,
   "pedidos": [
-    {
-      "id": 1,
-      "cliente": "Jao",
-      "produto": "Pizza",
-      "valor": 50,
-      "entregue": false,
-      "timestamp": "2023-10-03T17:19:53.362Z"
-    },
     {
       "id": 2,
       "cliente": "Jao da Silva",
@@ -20,7 +12,8 @@
     {
       "id": 3,
       "cliente": false,
-      "timestamp": "2023-10-03T17:21:46.943Z"
+      "timestamp": "2023-10-03T17:21:46.943Z",
+      "entregue": true
     }
   ]
 }
