@@ -5,16 +5,16 @@ const { readFile, writeFile } = fs;
 const app = express();
 app.use(express.json());
 
-app.listen(3009, async () => {
+app.listen(3000, async () => {
   try {
-    await readFile("car-list.json");
+    await readFile("pedidos.json");
     console.log("API Started!");
   } catch (err) {
     const initialJson = {
       brand: "Teste",
       models: [],
     };
-    writeFile("car-list.json", JSON.stringify(initialJson))
+    writeFile("pedidos.json", JSON.stringify(initialJson))
       .then(() => {
         console.log("Arquivo criado API Started!");
       })
