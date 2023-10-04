@@ -72,10 +72,34 @@ app.delete("/deletarPedido/:X", (req, res) => {
   const id = parseInt(req.params.X);
   if (!id === undefined) {
     return res.json({
-      error: "Id e status são campos obrigatórios.",
+      error: "Id é um campo obrigatório.",
     });
   }
   return res.json(deletarPedido(id));
+});
+
+//Chamada buscarPedido
+app.get("/buscarPedido/:X", (req, res) => {
+  const id = parseInt(req.params.X);
+  if (!id === undefined) {
+    return res.json({
+      error: "Id é um campo obrigatório.",
+    });
+  }
+  return res.json(buscarPedido(id));
+});
+
+//Chamada conslutarPedidosCliente
+app.get("/conslutarPedidos/Cliente/:X", (req, res) => {
+  const cliente = req.params.X;
+  if (!cliente === undefined) {
+    return res.json({
+      error: "Cliente é um campo obrigatório.",
+    });
+  }
+  return res.json({
+    msg: "O valor total dos pedidos é: " + conslutarPedidosCliente(cliente),
+  });
 });
 
 //Função criarPedido
@@ -131,13 +155,45 @@ function atualizaEntrega(id, entregue) {
 //Função deletarPedido
 function deletarPedido(id) {
   const pedidosData = JSON.parse(readFileSync("pedidos.json", "utf8"));
+  const index = pedidosData.pedidos.findIndex((pedido) => pedido.id === id);
+
+  if (!index) {
+    const err = json({ error: "Pedido não encontrado" });
+    return err;
+  }
+  pedidosData.pedidos.splice(index, 1);
+  writeFileSync("./pedidos.json", JSON.stringify(pedidosData, null, 2));
+  return index;
+}
+
+//Função buscarPedido
+function buscarPedido(id) {
+  const pedidosData = JSON.parse(readFileSync("pedidos.json", "utf8"));
   const pedidoAtual = pedidosData.pedidos.find((pedido) => pedido.id === id);
 
   if (!pedidoAtual) {
     const err = json({ error: "Pedido não encontrado" });
     return err;
   }
-  pedidosData.pedidos.splice(id, 1);
-  writeFileSync("./pedidos.json", JSON.stringify(pedidosData, null, 2));
   return pedidoAtual;
 }
+
+//Função conslutarPedidosCliente
+function conslutarPedidosCliente(cliente) {
+  const pedidosData = JSON.parse(readFileSync("pedidos.json", "utf8"));
+  let soma = 0;
+
+  for (const pedidos of pedidosData.pedidos) {
+    if (pedidos.cliente === cliente && pedidos.entregue === true) {
+      soma += pedidos.valor;
+    }
+  }
+  if (soma === 0) {
+    return {
+      error: "Cliente não encontrado ou não possui pedidos entregues",
+    };
+  }
+  return soma;
+}
+
+//Função conslutarPedidosProduto
