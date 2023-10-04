@@ -75,7 +75,10 @@ app.delete("/deletarPedido/:X", (req, res) => {
       error: "Id é um campo obrigatório.",
     });
   }
-  return res.json(deletarPedido(id));
+  deletarPedido(id);
+  return res.json({
+    msg: "Pedido deletado com sucesso!",
+  });
 });
 
 //Chamada buscarPedido
@@ -97,9 +100,35 @@ app.get("/conslutarPedidos/Cliente/:X", (req, res) => {
       error: "Cliente é um campo obrigatório.",
     });
   }
+  const total = conslutarPedidosCliente(cliente);
+  if (total.error) {
+    return res.status(400).json(total);
+  }
   return res.json({
-    msg: "O valor total dos pedidos é: " + conslutarPedidosCliente(cliente),
+    msg: "O valor total dos pedidos é: " + total,
   });
+});
+
+//Chamada conslutarPedidosProduto
+app.get("/conslutarPedidos/Produto/:X", (req, res) => {
+  const produto = req.params.X;
+  if (!produto === undefined) {
+    return res.json({
+      error: "Produto é um campo obrigatório.",
+    });
+  }
+  const total = conslutarPedidosProduto(produto);
+  if (total.error) {
+    return res.status(400).json(total);
+  }
+  return res.json({
+    msg: "O valor total dos pedidos é: " + total,
+  });
+});
+
+//Chamada maiorVendas
+app.get("/consultarVendas", (req, res) => {
+  return res.json(maiorVendas());
 });
 
 //Função criarPedido
@@ -197,3 +226,45 @@ function conslutarPedidosCliente(cliente) {
 }
 
 //Função conslutarPedidosProduto
+function conslutarPedidosProduto(produto) {
+  const pedidosData = JSON.parse(readFileSync("pedidos.json", "utf8"));
+  let soma = 0;
+
+  for (const pedidos of pedidosData.pedidos) {
+    if (pedidos.produto === produto && pedidos.entregue === true) {
+      soma += pedidos.valor;
+    }
+  }
+  if (soma === 0) {
+    return {
+      error: "Produto não encontrado ou não possui pedidos entregues",
+    };
+  }
+  return soma;
+}
+
+//Função maiorVendas
+function maiorVendas() {
+  const pedidosData = JSON.parse(readFileSync("pedidos.json", "utf8"));
+  const pedidosEntregues = pedidosData.pedidos.filter(
+    (pedidos) => pedidos.entregue === true
+  );
+
+  const contarProdutos = {};
+  pedidosEntregues.forEach((pedidos) => {
+    if (contarProdutos[pedidos.produto]) {
+      contarProdutos[pedidos.produto]++;
+    } else {
+      contarProdutos[pedidos.produto] = 1;
+    }
+  });
+
+  const produtosMaisVendidos = Object.keys(contarProdutos)
+    .map((produto) => ({ nome: produto, quantidade: contarProdutos[produto] }))
+    .sort((a, b) => b.quantidade - a.quantidade);
+
+  const resultado = produtosMaisVendidos.map(
+    (produto) => `${produto.nome} - ${produto.quantidade}`
+  );
+  return resultado;
+}
